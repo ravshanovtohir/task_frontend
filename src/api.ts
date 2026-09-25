@@ -3,7 +3,8 @@ import { useAuth } from "./auth";
 import type { ApiResponse } from "./types";
 // Backend URI-versioning is enabled, but controllers are version-neutral: routes begin at /auth, /staff and /payments.
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000",
+  baseURL:
+    import.meta.env.VITE_API_URL || "https://task-backend-pa1x.onrender.com",
 });
 api.interceptors.request.use((c) => {
   const t = useAuth.getState().access;

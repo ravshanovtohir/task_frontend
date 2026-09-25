@@ -8,7 +8,7 @@ pnpm install --ignore-workspace
 pnpm dev
 ```
 
-`VITE_API_URL` standart qiymati `http://localhost:3000`. Backend boshqa manzilda bo‘lsa, `.env` ichida shu qiymatni o‘zgartiring.
+`VITE_API_URL` standart qiymati `https://task-backend-pa1x.onrender.com`. Lokal backend bilan ishlash uchun `.env` ichida `http://localhost:3000` qiymatini qo‘ying.
 
 Asosiy imkoniyatlar:
 
