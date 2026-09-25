@@ -1,0 +1,253 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: #f5f7f7;
+  color: #182421;
+  font-family: Inter, Arial, sans-serif;
+}
+.shell {
+  min-height: 100vh;
+}
+.ant-layout-sider {
+  background: #103735 !important;
+  padding: 18px 10px;
+}
+.brand {
+  height: 64px;
+  color: #fff;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 0 10px;
+}
+.brand b,
+.login section > b {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #55d0ae;
+  color: #103735;
+}
+.brand strong,
+.brand small {
+  display: block;
+}
+.brand strong {
+  font-size: 15px;
+}
+.brand small {
+  font-size: 11px;
+  color: #a8c6bd;
+}
+.ant-layout-header {
+  height: 72px;
+  background: #fff !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30px !important;
+  border-bottom: 1px solid #e3ece8;
+}
+.ant-layout-content {
+  padding: 38px;
+  max-width: 1500px;
+  width: 100%;
+  margin: auto;
+}
+.heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 26px;
+}
+.heading h2 {
+  font-size: 30px;
+  margin: 4px 0;
+}
+.heading p {
+  margin: 0;
+  color: #6c7b76;
+}
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  color: #18756b;
+}
+.panel,
+.data-card {
+  background: #fff;
+  border: 1px solid #dfe8e4;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px #133f3610;
+}
+.panel .ant-table-wrapper {
+  padding: 0 8px;
+}
+.tools {
+  padding: 16px 18px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #edf1ef;
+  background: #fbfcfc;
+}
+.tools .ant-input-affix-wrapper {
+  max-width: 420px;
+  min-width: 260px;
+  flex: 1;
+}
+.tools .ant-select {
+  min-width: 180px;
+}
+.tools .ant-picker,
+.tools > .ant-input {
+  min-width: 180px;
+}
+.tools .ant-btn {
+  margin-left: auto;
+}
+.ant-table-thead > tr > th {
+  font-weight: 700 !important;
+  background: #fff !important;
+}
+.ant-table-tbody > tr > td {
+  padding-block: 17px !important;
+}
+.person {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.person span {
+  display: grid;
+  gap: 2px;
+}
+.person small {
+  font-size: 12px;
+  color: #82918c;
+}
+.data-card {
+  margin-top: 20px;
+}
+.report-row {
+  margin-top: 20px;
+}
+.report-row .ant-statistic-title {
+  min-height: 36px;
+}
+.drawer-note {
+  padding: 10px 12px;
+  background: #f2f8f6;
+  border-radius: 8px;
+  color: #487067;
+  font-size: 13px;
+}
+.login {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.login section {
+  background: #103735;
+  color: #fff;
+  padding: clamp(48px, 9vw, 150px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.login section > b {
+  margin-bottom: 45px;
+  width: 54px;
+  height: 54px;
+}
+.login h1 {
+  font-size: clamp(36px, 4vw, 60px);
+  line-height: 1.05;
+  max-width: 650px;
+  margin: 0 0 22px;
+}
+.login section p {
+  color: #bed6cf;
+  font-size: 18px;
+  max-width: 480px;
+  line-height: 1.6;
+}
+.login-card {
+  width: min(420px, calc(100% - 36px));
+  align-self: center;
+  justify-self: center;
+  padding: 18px;
+  box-shadow: 0 20px 50px #10373522;
+}
+.login-card label {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: #176f63;
+  font-weight: bold;
+}
+.login-card h2 {
+  margin: 8px 0;
+}
+.login-card > .ant-alert {
+  margin: 16px 0;
+}
+.center {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+@media (max-width: 768px) {
+  .login {
+    grid-template-columns: 1fr;
+  }
+  .login section {
+    min-height: 290px;
+    padding: 42px 28px;
+  }
+  .login section > b {
+    margin-bottom: 28px;
+  }
+  .login h1 {
+    font-size: 36px;
+  }
+  .login-card {
+    margin: 30px 0;
+  }
+  .ant-layout-content {
+    padding: 24px 16px;
+  }
+  .heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .heading .ant-btn {
+    width: 100%;
+  }
+  .tools > * {
+    width: 100%;
+  }
+  .tools .ant-input-affix-wrapper {
+    min-width: 0;
+  }
+  .tools .ant-picker,
+  .tools > .ant-input {
+    min-width: 0;
+  }
+  .tools .ant-btn {
+    margin-left: 0;
+  }
+  .ant-layout-header {
+    padding: 0 16px !important;
+  }
+  .ant-layout-header > span {
+    display: none;
+  }
+}
