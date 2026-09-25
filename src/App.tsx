@@ -42,6 +42,7 @@ import {
   LockOutlined,
   LogoutOutlined,
   MailOutlined,
+  MenuOutlined,
   PlusOutlined,
   SearchOutlined,
   TeamOutlined,
@@ -72,6 +73,8 @@ const statusColor: Record<TransactionStatus, string> = {
 };
 const getRole = (role: User["roles"][number]) =>
   typeof role === "string" ? role : "role" in role ? role.role.key : role.key;
+const isAdminUser = (user: User) =>
+  user.roles.some((role) => getRole(role) === "ADMIN");
 const roleTitle = (role: any) =>
   typeof role === "string"
     ? role
@@ -80,6 +83,7 @@ const roleTitle = (role: any) =>
 function AppLayout() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const setUser = useAuth((state) => state.setUser);
   const clear = useAuth((state) => state.clear);
   useEffect(() => {
@@ -126,9 +130,13 @@ function AppLayout() {
       icon: <BarChartOutlined />,
     },
   ];
+  const goTo = (key: string) => {
+    setMobileMenuOpen(false);
+    navigate(key);
+  };
   return (
     <Layout className="shell">
-      <Sider breakpoint="lg" collapsedWidth="0">
+      <Sider className="desktop-sider" width={220}>
         <div className="brand">
           <b>RB</b>
           <span>
@@ -141,12 +149,19 @@ function AppLayout() {
           mode="inline"
           selectedKeys={[location.pathname]}
           items={menu}
-          onClick={({ key }) => navigate(key)}
+          onClick={({ key }) => goTo(key)}
         />
       </Sider>
       <Layout>
-        <Header>
-          <span>
+        <Header className="app-header">
+          <Button
+            className="mobile-menu-trigger"
+            type="text"
+            aria-label="Menyuni ochish"
+            icon={<MenuOutlined />}
+            onClick={() => setMobileMenuOpen(true)}
+          />
+          <span className="welcome-text">
             Xush kelibsiz, {user?.first_name || user?.firstName || "..."}
           </span>
           <Dropdown
@@ -161,8 +176,9 @@ function AppLayout() {
               ],
             }}
           >
-            <Button type="text">
-              <Avatar icon={<UserOutlined />} /> {user?.email}
+            <Button className="profile-button" type="text">
+              <Avatar icon={<UserOutlined />} />
+              <span className="profile-email">{user?.email}</span>
             </Button>
           </Dropdown>
         </Header>
@@ -170,6 +186,29 @@ function AppLayout() {
           <Outlet />
         </Content>
       </Layout>
+      <Drawer
+        className="mobile-navigation"
+        title={
+          <div className="brand mobile-brand">
+            <b>RB</b>
+            <span>
+              <strong>RoleBase</strong>
+              <small>Boshqaruv markazi</small>
+            </span>
+          </div>
+        }
+        placement="left"
+        width={280}
+        open={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+      >
+        <Menu
+          mode="inline"
+          selectedKeys={[location.pathname]}
+          items={menu}
+          onClick={({ key }) => goTo(key)}
+        />
+      </Drawer>
     </Layout>
   );
 }
@@ -544,6 +583,7 @@ function Users() {
   const [search, setSearch] = useState("");
   const [opened, setOpened] = useState(false);
   const [editing, setEditing] = useState<User | null>(null);
+  const [lockedRoleIds, setLockedRoleIds] = useState<number[]>([]);
   const [form] = Form.useForm<StaffForm>();
   const users = useQuery({
     queryKey: ["users", page, search],
@@ -570,7 +610,9 @@ function Users() {
         firstName: values.firstName.trim(),
         lastName: values.lastName.trim(),
         email: values.email.trim().toLowerCase(),
-        roleIds: values.roleIds.map(Number),
+        roleIds: Array.from(
+          new Set([...lockedRoleIds, ...values.roleIds.map(Number)]),
+        ),
       };
       if (editing && !data.password) {
         const { password: _password, ...updateData } = data;
@@ -600,15 +642,22 @@ function Users() {
   const open = async (user?: User) => {
     form.resetFields();
     setEditing(user || null);
+    setLockedRoleIds([]);
     if (user) {
       try {
         const data = (await api.get<ApiResponse<any>>(`/staff/${user.id}`)).data
           .data;
+        const assignedRoles = data.roles.map((role: any) => role.role || role);
+        setLockedRoleIds(
+          assignedRoles
+            .filter((role: any) => role.key === "ADMIN")
+            .map((role: any) => role.id),
+        );
         form.setFieldsValue({
           firstName: data.firstName,
           lastName: data.lastName,
           email: data.email,
-          roleIds: data.roles.map((role: any) => role.id),
+          roleIds: assignedRoles.map((role: any) => role.id),
         });
       } catch (error) {
         message.error(errorText(error));
@@ -703,21 +752,23 @@ function Users() {
                         icon={<EditOutlined />}
                         onClick={() => open(user)}
                       />
-                      <Button
-                        aria-label="O‘chirish"
-                        danger
-                        icon={<DeleteOutlined />}
-                        onClick={() =>
-                          Modal.confirm({
-                            title: "Foydalanuvchini o‘chirasizmi?",
-                            content: `${user.firstName} ${user.lastName} hisobini o‘chirishni tasdiqlang.`,
-                            okText: "O‘chirish",
-                            cancelText: "Bekor qilish",
-                            okButtonProps: { danger: true },
-                            onOk: () => remove.mutateAsync(user.id),
-                          })
-                        }
-                      />
+                      {!isAdminUser(user) && (
+                        <Button
+                          aria-label="O‘chirish"
+                          danger
+                          icon={<DeleteOutlined />}
+                          onClick={() =>
+                            Modal.confirm({
+                              title: "Foydalanuvchini o‘chirasizmi?",
+                              content: `${user.firstName} ${user.lastName} hisobini o‘chirishni tasdiqlang.`,
+                              okText: "O‘chirish",
+                              cancelText: "Bekor qilish",
+                              okButtonProps: { danger: true },
+                              onOk: () => remove.mutateAsync(user.id),
+                            })
+                          }
+                        />
+                      )}
                     </Space>
                   </PrivateComponent>
                 ),
@@ -737,11 +788,13 @@ function Users() {
         title={editing ? "Foydalanuvchini tahrirlash" : "Yangi foydalanuvchi"}
         open={opened}
         onClose={() => setOpened(false)}
-        width={480}
+        width="min(480px, 100vw)"
         destroyOnHidden
       >
         <p className="drawer-note">
-          ADMIN roli yangi foydalanuvchiga biriktirilmaydi.
+          {editing && lockedRoleIds.length > 0
+            ? "ADMIN roli himoyalangan: uni olib tashlab bo‘lmaydi."
+            : "ADMIN roli yangi foydalanuvchiga biriktirilmaydi."}
         </p>
         <Form
           form={form}
@@ -754,7 +807,7 @@ function Users() {
           autoComplete="off"
         >
           <Row gutter={12}>
-            <Col span={12}>
+            <Col xs={24} sm={12}>
               <Form.Item
                 name="firstName"
                 label="Ismi"
@@ -770,7 +823,7 @@ function Users() {
                 <Input size="large" />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col xs={24} sm={12}>
               <Form.Item
                 name="lastName"
                 label="Familiyasi"
@@ -843,10 +896,17 @@ function Users() {
               placeholder="Rollarni tanlang"
               loading={roles.isLoading}
               options={(roles.data || [])
-                .filter((role) => role.key !== "ADMIN")
+                .filter(
+                  (role) =>
+                    role.key !== "ADMIN" || lockedRoleIds.includes(role.id),
+                )
                 .map((role) => ({
                   value: role.id,
-                  label: role.title?.uz || role.key,
+                  label:
+                    role.key === "ADMIN"
+                      ? `${role.title?.uz || role.key} (himoyalangan)`
+                      : role.title?.uz || role.key,
+                  disabled: role.key === "ADMIN",
                 }))}
             />
           </Form.Item>
